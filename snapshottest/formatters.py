@@ -2,6 +2,7 @@ import six
 
 from .sorted_dict import SortedDict
 from .generic_repr import GenericRepr
+from collections import defaultdict
 
 
 class BaseFormatter(object):
@@ -31,6 +32,43 @@ class TypeFormatter(BaseFormatter):
 
     def format(self, value, indent, formatter):
         return self.format_func(value, indent, formatter)
+
+    def store(self, test, value):
+        if isinstance(value, (int, float, complex, bool, bytes, set, frozenset, str)) or value is None:
+            return value
+        elif isinstance(value, dict):
+            return {self.store(test, key): self.store(test, value[key]) for key in value}
+        elif isinstance(value, list):
+            return [self.store(test, item) for item in value]
+        elif isinstance(value, tuple):
+            value = tuple(value)
+            result = list()
+            for i in value:
+                result.append(self.store(test, i))
+            result = tuple(value)
+            return result
+        else:
+            formatter = GenericFormatter()
+            return formatter.store(test, value)
+
+    def assert_value_matches_snapshot(self, test, value, snapshot_value):
+        if isinstance(value, (int, float, complex, bool, bytes, set, frozenset, str)) or value is None:
+            test.assert_equals(value, snapshot_value)
+        elif isinstance(value, dict):
+            test.assert_equals({self.store(test, key): self.store(test, value[key]) for key in value}, snapshot_value)
+        elif isinstance(value, list):
+            test.assert_equals([self.store(test, item) for item in value], snapshot_value)
+        elif isinstance(value, tuple):
+            value = tuple(value)
+            result = list()
+            for i in value:
+                result.append(self.store(test, i))
+            result = tuple(value)
+            test.assert_equals(value, snapshot_value)
+        else:
+            formatter = GenericFormatter()
+            formatter.assert_value_matches_snapshot(test, value, snapshot_value)
+        
 
 
 def trepr(s):
