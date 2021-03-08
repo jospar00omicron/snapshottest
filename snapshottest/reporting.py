@@ -14,7 +14,7 @@ def reporting_lines(testing_cli):
     new_snapshots = SnapshotModule.stats_new_snapshots()
     if new_snapshots[0]:
         yield (
-            colored('{} snapshots written', 'green', attrs=bold) + ' in {} test suites.'
+            colored('{0} snapshots written {2}', 'green', attrs=bold) + ' in {1} test suites.'
         ).format(*new_snapshots)
     inspect_str = colored(
         'Inspect your code or run with `{} --snapshot-update` to update them.'.format(testing_cli),
@@ -29,7 +29,7 @@ def reporting_lines(testing_cli):
     unvisited_snapshots = SnapshotModule.stats_unvisited_snapshots()
     if unvisited_snapshots[0]:
         yield (
-            colored('{} snapshots deprecated', 'yellow', attrs=bold) + ' in {} test suites. '
+            colored('{0} snapshots deprecated {3}', 'yellow', attrs=bold) + ' in {1} test suites. '
             + inspect_str
         ).format(*unvisited_snapshots)
 
