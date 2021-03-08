@@ -75,7 +75,7 @@ class SnapshotModule(object):
             count_snapshots += length
             count_modules += min(length, 1)
 
-        return count_snapshots, count_modules
+        return count_snapshots, count_modules, module.new_snapshots, module.unvisited_snapshots
 
     @classmethod
     def stats_unvisited_snapshots(cls):
